@@ -1,14 +1,34 @@
 
+import { useState, useEffect } from 'react'
 import './App.css'
-
+import { useDispatch } from 'react-redux'
+import authService from './appwrite/auth'
+import { login, logout } from './store/slices/authSlice'
+import { Footer, Header } from './components'
+import { Outlet } from 'react-router-dom'
 function App() {
-  console.log(import.meta.env.VITE_APPWRITE_URL);
+  const [loading, setLoading] = useState(true)
+  const dispatch = useDispatch()
 
-  return (
+  useEffect(() => {
+    authService.getCurrentUser()
+      .then((userData) => {
+        if (userData) {
+          dispatch(login(userData))
+        }
+        else {
+          dispatch(logout())
+        }
+      })
+      .finally(setLoading(false))
+  }, [])
+  return !loading ? (
     <>
-      <h1>Blog App</h1>
-    </>
-  )
+      <div>hello</div>
+      <Header />
+      <main>TODo: <Outlet /></main>
+      <Footer /></>
+  ) : (null)
 }
 
 export default App
